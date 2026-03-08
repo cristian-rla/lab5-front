@@ -19,6 +19,7 @@ const CountryList = () => {
     try {
       const data = await getCountries();
       setCountries(data);
+      console.log("Países obtenidos:", data);
       setError(null);
     } catch (err) {
       setError("Error al cargar los países");
@@ -63,7 +64,7 @@ const CountryList = () => {
         </div>
       )}
       <div className="countries">
-        {countries.length === 0 ? (
+        {countries.length === 0 || !Array.isArray(countries) ? (
           <p>No hay países registrados.</p>
         ) : (
           countries.map((country) => (
