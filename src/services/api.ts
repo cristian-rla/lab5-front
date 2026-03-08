@@ -50,12 +50,18 @@ export const deleteCountry = async (id : string) => {
 };
 
 
-type Employee = {
+export type Employee = {
     id: number,
     name : string, 
     email : string, 
     phone : string, 
     role : string
+}
+export const EmptyEmployee = {
+  name:" ",
+  email : " ", 
+  phone : " ", 
+  role : " "
 }
 
 export type EmployeeUpdate = Omit<Employee, "id">;

@@ -1,5 +1,4 @@
-import { useState } from 'react'
-
+import './Item.css'
 interface Item {
     id: number;
     name: string;
@@ -12,9 +11,9 @@ interface ItemProps {
 
 export default function Item({ data , deleteFn, editFn }: ItemProps) {
     return (
-        <div>
+        <div className="Item">
             <h3>{data.name}</h3>
-            <ul>
+            <ul className ="Item-list">
                 {Object.entries(data).filter(([key])=> (key !== "name" && key !== "id")).map(([key, value]) => (
                     <p key={key}>
                         <strong>{key}:</strong> {value}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCountries, deleteCountry } from "../services/api";
+import { getCountries, deleteCountry } from "../../services/api";
 import CountryItem from "./countryItem";
 import CountryForm from "./countryForm";
 

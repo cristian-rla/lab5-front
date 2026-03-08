@@ -1,12 +1,14 @@
-import {useState, useEffect, Fragment} from "react"
+import {useState} from "react"
 
 interface ItemFormProps<T extends {id:number} & Record<string, any>> {
     itemName: string,
     data: T,
+    mode: "create" | "update",
     submitSuccessful: (id:number, data:T) => void, 
     cancelEdit?: () => void
 }
-function ItemForm<T extends {id:number} & Record<string, any>>({itemName, data, submitSuccessful, cancelEdit}: ItemFormProps<T>) {
+
+function ItemForm<T extends {id:number} & Record<string, any>>({itemName, data, mode, submitSuccessful, cancelEdit}: ItemFormProps<T>) {
     const [formData, setFormData] = useState<T>(data);
 
     function handleChange(e : React.ChangeEvent<HTMLInputElement>){
@@ -17,7 +19,7 @@ function ItemForm<T extends {id:number} & Record<string, any>>({itemName, data, 
     }
     return (
     <>
-      <h3>{cancelEdit ? 'Edit ' : 'Create '} {itemName}</h3>
+      <h3>{mode === 'update' ? 'Edit ' : 'Create '} {itemName}</h3>
       <form className ="form-group" onSubmit={(e) => {
         e.preventDefault();
         submitSuccessful(formData.id, formData);
@@ -29,9 +31,9 @@ function ItemForm<T extends {id:number} & Record<string, any>>({itemName, data, 
                 <input id={key} name ={key} value={String(value)} onChange={handleChange} />
             </div>
         ))}
-        <button type="submit">{cancelEdit ? 'Edit ' : 'Create '} </button> {/* Este boton al picarle desencadena el submit */}
-        {cancelEdit && (
-            <button type="reset" onClick={cancelEdit}>Cancelar</button>
+        <button type="submit"> {cancelEdit ? 'Edit ' : 'Create '} </button> {/* Este boton al picarle desencadena el submit */}
+        {mode === 'update' && (
+            <button type="reset" onClick={cancelEdit}>Cancel</button>
         )}
       </form>
     </>

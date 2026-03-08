@@ -1,0 +1,9 @@
+.Item{
+    display:flex
+}
+.Item-list{
+    display:grid;
+}
+td {
+    padding: 8px 16px
+}
