@@ -1,8 +1,15 @@
 // src/services/api.js
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api";
- 
+const API_URL = import.meta.env.VITE_API_URL;
+
+export type Country = {
+  id: string;
+  name: string;
+  capital: string;
+  currency: string;
+}
+
 export const getCountries = async () => {
   try {
     const response = await axios.get(`${API_URL}/countries`);
@@ -57,60 +64,70 @@ export type Employee = {
     phone : string, 
     role : string
 }
-export const EmptyEmployee = {
-  name:" ",
-  email : " ", 
-  phone : " ", 
-  role : " "
+export const emptyEmployee = {
+  name:"",
+  email : "", 
+  phone : "", 
+  role : ""
 }
 
 export type EmployeeUpdate = Omit<Employee, "id">;
 
-
-export const getEmployees = async () =>{
-    try {
-        const response = await axios.get(`${API_URL}/employees`);
-        return response.data;
-    } catch (error){
-        console.error("Error al obtener los empleados", error);
-        throw error;
-    }
+export interface EmployeeRepo {
+  getEmployees : () => Promise<Employee[]>,
+  getEmployeeById : (id : number) => Promise<Employee[]>,
+  createEmployee : (employee : EmployeeUpdate) => Promise<void>,
+  updateEmployee : (id : number, employeeData : EmployeeUpdate) => Promise<void>,
+  deleteEmployee : (id : number) => Promise<void>
 }
 
-export const getEmployeeById = async (id:number) => {
-    try {
-        const response = await axios.get(`${API_URL}/employees/${id}`);
+export const createEmployeeRepo = (prefix:string) : EmployeeRepo => {
+  return {
+    getEmployees : async () => {
+        try {
+          const response = await axios.get(`${API_URL}/employees/${prefix}`);
+          return response.data;
+      } catch (error){
+          console.error("Error al obtener los empleados", error);
+          throw error;
+      }
+    },
+    getEmployeeById : async (id:number) => {
+      try {
+        const response = await axios.get(`${API_URL}/employees/${prefix}/${id}`)
         return response.data;
-    } catch (error) {
-        console.error("Error al obtener empleado", error);
+      } catch (error) {
+        console.error('Error al obtener el empleado');
         throw error;
-    }
-}
-
-export const createEmployee = async (employee : EmployeeUpdate) => {
-    try {
-        const response = await axios.post(`${API_URL}/employees`, employee);
+      }
+    },
+    createEmployee : async (employee:EmployeeUpdate) => {
+      try {
+        const response = await axios.post(`${API_URL}/employees/${prefix}`, employee);
         return response.data;
-    } catch (error) {
-        console.error("Error al crear empleado", error);
+      } catch (error) {
+        console.error(`Error al crear al empleado ${employee}`);
+        console.log(error);
         throw error;
-    }
-}
-export const updateEmployee = async (id : number, employee : EmployeeUpdate) => {
-    try {
-        const response = await axios.put(`${API_URL}/employees/${id}`, employee)
+      }
+    },
+    updateEmployee : async (id:number, employeeData : EmployeeUpdate) => {
+      try {
+        const response = await axios.put(`${API_URL}/employees/${prefix}/${id}`);
         return response.data;
-    } catch (error) {
-        console.error("Error al actualizar el empleado", error);
+      } catch (error) {
+        console.error(`Error al actualizar el empleado ${id} con los datos ${employeeData}`);
         throw error;
-    }
-};
-export const deleteEmployee = async (id : number) => {
-    try{
-        const response = await axios.delete(`${API_URL}/employees/${id}`);
+      }
+    },
+    deleteEmployee : async (id:number) => {
+      try {
+        const response = await axios.delete(`${API_URL}/employees/${prefix}/${id}`);
         return response.data;
-    } catch (error) {
-        console.error("Error al eliminar el empleado", error);
+      } catch (error) {
+        console.error(`Error al borrar el empleado ${id}`);
         throw error;
+      }
     }
+  }
 }

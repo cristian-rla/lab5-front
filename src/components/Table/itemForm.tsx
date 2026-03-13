@@ -29,7 +29,7 @@ function ItemForm<T extends Record<string, any>>({data, mode, submitSuccessful, 
                 e.preventDefault();
                 submitSuccessful(formData);
             }}> 
-            {cancelEdit ? 'Edit ' : 'Create '} 
+            {cancelEdit ? 'Accept ' : 'Create '} 
         </button> {/* Este boton al picarle desencadena el submit */}
         {mode === 'update' && (
             <button type="reset" onClick={cancelEdit}>Cancel</button>

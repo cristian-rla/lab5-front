@@ -38,14 +38,15 @@ function ItemTable<T extends {id : number, name: string} & Record<string, any>>(
     }
     async function createItem(data : Omit<T, 'id'>){
         try {
-        if(!data.name.trim()){
-            setError(`The name of the ${itemName.toLowerCase()} is mandatory`);
-            return;
-        }
-        setError(null);
-        await createRecord(data as any);
-        await loadItems();
+            if(!data.name.trim()){
+                setError(`The name of the ${itemName.toLowerCase()} is mandatory`);
+                return;
+            }
+            setError(null);
+            await createRecord(data);
+            loadItems();
         } catch (error) {
+            console.log(error);
             setError(`Could not create the ${itemName}`);
         }
 
@@ -53,11 +54,12 @@ function ItemTable<T extends {id : number, name: string} & Record<string, any>>(
     async function editItem(id : number, data:T){
         try {
             setEditingId(null);
-            await updateRecord(id, data as any); // estoy cansado. Creo que esta funcion deberia ser pasada por el padre. 
+            await updateRecord(id, data); // estoy cansado. Creo que esta funcion deberia ser pasada por el padre. 
             // aqui arrojaria un error si no se pudo actualizar el empleado, pero si se pudo actualizar, entonces actualizo la lista de empleados para que se vea reflejado el cambio.
             await loadItems()
             setError(null);
         } catch (error) {
+            console.log(error);
             setError(`Could not update the ${itemName.toLowerCase()}`);
         }
     }
@@ -67,6 +69,7 @@ function ItemTable<T extends {id : number, name: string} & Record<string, any>>(
             const fetchedItems = await fetchItems();
             setItems(fetchedItems);
         } catch( error ){
+            console.log(error);
             setError(`Error loading the ${itemName.toLowerCase()}`)
         } finally {
             setLoading(false);
@@ -74,7 +77,6 @@ function ItemTable<T extends {id : number, name: string} & Record<string, any>>(
     }
     useEffect(() => {
         loadItems();
-        console.log(emptyItem)
     }, []);
     
     if(loading) {
@@ -87,7 +89,7 @@ function ItemTable<T extends {id : number, name: string} & Record<string, any>>(
         <table>
             <thead>
                 <tr>
-                    {Object.keys(items[0]).filter((k)=> k !=='id').map((k) =><th key ={k}>{k}</th>)}
+                    {Object.keys(emptyItem).filter((k)=> k !=='id').map((k) =><th key ={k}>{k}</th>)}
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -100,18 +102,22 @@ function ItemTable<T extends {id : number, name: string} & Record<string, any>>(
                 )}
             {items.map((item) => {
                 return (
-                    <>
-                        {item.id !== editingId ? 
-                        <Item data = {item}
-                            deleteFn={deleteItem}
-                            editFn={focusItemEdit}
-                        /> : 
-                        <ItemForm data = {item} mode ="update" submitSuccessful={(formData) => editItem(item.id, {...item, ...formData})} cancelEdit={cancelEditing}/>
-                        // AQUI PUSE UNA FUNCION FLECHA PORQUE TENGO QUE USAR COMO PARAMETROS ATRIBUTOS QUE SOLO ME INTERESA QUE ESTA CAPA CONOZCA 
-                        // RESULTA QUE LA FUNCION DE SUBMIT SUCCESSFUL AHORA PUEDE PASAR UN PARAMETRO DESDE EL HIJO (formData) PERO APARTE PUEDO USAR PARAMETROS DESDE EL PADRE
-                        }
-                    </>
-            )})}
+                    item.id !== editingId ? 
+                    <Item data = {item}
+                        key = {item.id}
+                        deleteFn={deleteItem}
+                        editFn={focusItemEdit}
+                    /> : 
+                    <ItemForm data = {item} 
+                        key = {item.id}
+                        mode ="update" 
+                        submitSuccessful={(formData) => editItem(item.id, {...item, ...formData})} 
+                        cancelEdit={cancelEditing}/>
+                    // AQUI PUSE UNA FUNCION FLECHA PORQUE TENGO QUE USAR COMO PARAMETROS ATRIBUTOS QUE SOLO ME INTERESA QUE ESTA CAPA CONOZCA 
+                    // RESULTA QUE LA FUNCION DE SUBMIT SUCCESSFUL AHORA PUEDE PASAR UN PARAMETRO DESDE EL HIJO (formData) PERO APARTE PUEDO USAR PARAMETROS DESDE EL PADRE
+                    
+                )})
+            }
             </tbody>
         </table>
         }

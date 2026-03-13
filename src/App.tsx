@@ -1,15 +1,31 @@
 import './App.css'
-import ItemList from './components/ItemList'
-import { createEmployee, deleteEmployee, EmptyEmployee, getEmployees, updateEmployee, type Employee} from './services/api'
-import CountryList from './components/countryItems/countryList'
+import { emptyEmployee, createEmployeeRepo, type Employee} from './services/api'
 import ItemTable from './components/Table/ItemList'
 
 
 function App() {
+  const mysql = createEmployeeRepo("MYSQL");
+  const pg = createEmployeeRepo("PG");
   return (
     <div className='App'>
-      <CountryList />
-      <ItemTable<Employee> itemName = "employee" emptyItem = {EmptyEmployee} fetchItems ={getEmployees} updateRecord={updateEmployee} createRecord={createEmployee} deleteRecord={deleteEmployee}/>
+      <h1>Employee Management</h1>
+      <ItemTable<Employee> 
+        itemName = "employee" 
+        emptyItem={emptyEmployee}
+        fetchItems={mysql.getEmployees}
+        createRecord={mysql.createEmployee}
+        updateRecord={mysql.updateEmployee}
+        deleteRecord={mysql.deleteEmployee}
+      />
+      <h1>Employee Management POSTGRES</h1>
+      <ItemTable<Employee> 
+        itemName = "employee" 
+        emptyItem = {emptyEmployee} 
+        fetchItems={pg.getEmployees}
+        createRecord={pg.createEmployee}
+        updateRecord={pg.updateEmployee}
+        deleteRecord={pg.deleteEmployee}
+      />
     </div>
   )
 }

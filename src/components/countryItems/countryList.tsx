@@ -1,16 +1,10 @@
 import { useState, useEffect } from "react";
-import { getCountries, deleteCountry } from "../../services/api";
+import { getCountries, deleteCountry, type Country } from "../../services/api";
 import CountryItem from "./countryItem";
 import CountryForm from "./countryForm";
 
-interface Countries {
-  id: string;
-  name: string;
-  capital: string;
-  currency: string;
-}
 const CountryList = () => {
-  const [countries, setCountries] = useState<Countries[]>([]);
+  const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
